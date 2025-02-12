@@ -41,7 +41,7 @@ export function useArticles() {
             const response = await fetch(`/api/article/${id}`, {method: "DELETE"})
             if (!response.ok) throw {message: response.json(), status: response.status};
             setArticles(articles.filter((a) => a.id !== id))
-        } catch (error) {
+        } catch (error:any) {
             toast({
                 title: "Aïe caramba ! 🤠",
                 description: error?.message || "Erreur inconnue",
