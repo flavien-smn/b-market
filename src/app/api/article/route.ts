@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Création de l'article
-        const newArticle: ArticleDTO = {name, image, description, price, unit, categoryName}
+        const newArticle: ArticleDTO = {name, image, price, unit, description, categoryName}
         await createArticle(newArticle);
 
         return NextResponse.json(newArticle, {status: 201});

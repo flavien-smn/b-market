@@ -1,6 +1,11 @@
 import {NextRequest, NextResponse} from "next/server";
 import {db} from "@/app/lib/db";
 import {Prisma} from "@prisma/client";
+import { deleteArticle, getArticleById, isArticleAlreadyExist, updateArticle } from "@/services/articleService";
+import { getCategoryByName } from "@/services/categoryService";
+import { ArticleDTO } from "@/dto/articleDTO";
+import { isArticleAlreadyUsedInOrder } from "@/services/orderItem";
+import { isArticleAlreadyUsedInCart } from "@/services/cartItemService";
 
 interface ArticleUpdateProps {
     params: { id: string }
@@ -17,10 +22,9 @@ export async function GET(_req: NextRequest, {params}: ArticleUpdateProps) {
         }
 
         // Recherche de l'article
-        const article = await db.article.findUnique({
-            where: {id},
-        });
+        const article = await getArticleById(id);
 
+        // Vérification si l'article existe
         if (!article) {
             return NextResponse.json({message: "Article not found"}, {status: 404});
         }
@@ -44,18 +48,16 @@ export async function PATCH(req: NextRequest, {params}: { params: { id: string }
             return NextResponse.json({message: "L'ID de l'article est requis"}, {status: 400});
         }
 
-        // Vérifier si l'article existe
-        const existingArticle = await db.article.findUnique({
-            where: {id},
-        });
+        // Recherche de l'article
+        const existingArticle = await getArticleById(id);
 
+        // Vérifier si l'article existe
         if (!existingArticle) {
             return NextResponse.json({message: "Article introuvable"}, {status: 404});
         }
 
         // Validation des champs autorisés
         const {name, image, description, price, unit, categoryName} = body;
-
         if (price !== undefined && (typeof price !== "number" || price <= 0)) {
             console.error(`❌ Le prix doit être un nombre positif`);
             return NextResponse.json({message: "Le prix doit être un nombre positif"}, {status: 400});
@@ -64,9 +66,7 @@ export async function PATCH(req: NextRequest, {params}: { params: { id: string }
         // Vérifier si une catégorie valide est fournie
         let category;
         if (categoryName) {
-            category = await db.category.findUnique({
-                where: {name: categoryName},
-            });
+            category = await getCategoryByName(categoryName);
 
             if (!category) {
                 console.error(`❌ La catégorie '${categoryName}' n'existe pas`);
@@ -76,12 +76,7 @@ export async function PATCH(req: NextRequest, {params}: { params: { id: string }
 
         // Vérifier si un autre article avec le même nom existe déjà
         if (name && name !== existingArticle.name) {
-            const articleWithSameName = await db.article.findFirst({
-                where: {
-                    name,
-                    id: {not: id}, // Vérifie que l'article trouvé n'est pas celui qu'on met à jour
-                },
-            });
+            const articleWithSameName = await isArticleAlreadyExist(id, name);
 
             if (articleWithSameName) {
                 console.error(`❌ Le nom '${name}' existe déjà sur un autre article`);
@@ -93,17 +88,8 @@ export async function PATCH(req: NextRequest, {params}: { params: { id: string }
         }
 
         // Mettre à jour l'article
-        const updatedArticle = await db.article.update({
-            where: {id},
-            data: {
-                name: name ?? existingArticle.name,
-                image: image ?? existingArticle.image,
-                description: description ?? existingArticle.description,
-                price: price ?? existingArticle.price,
-                unit: unit ?? existingArticle.unit,
-                category: category ? {connect: {name: categoryName}} : undefined,
-            },
-        });
+        const articleDTO: ArticleDTO = {name, image, price, unit, description, categoryName}
+        const updatedArticle = await updateArticle(id, articleDTO);
 
         return NextResponse.json(updatedArticle, {status: 200});
     } catch (error) {
@@ -121,6 +107,7 @@ export async function PATCH(req: NextRequest, {params}: { params: { id: string }
 export async function DELETE(req: NextRequest, {params}: { params: { id: string } }) {
     try {
         const {id} = await params;
+
         // 1️⃣ Vérification de l'ID
         if (!id) {
             console.error("❌ ID manquant !");
@@ -128,24 +115,14 @@ export async function DELETE(req: NextRequest, {params}: { params: { id: string 
         }
 
         // 2️⃣ Vérifier si l'article existe
-        const existingArticle = await db.article.findUnique({
-            where: {id},
-        });
-
-
+        const existingArticle = await getArticleById(id);
         if (!existingArticle) {
             console.error("❌ Article introuvable !");
             return NextResponse.json({message: "Article introuvable"}, {status: 404});
         }
 
-        // TODO 3️⃣ Vérifier si l'article est utilisé dans une commande
         // 3️⃣ Vérifier si l'article est utilisé dans une commande via OrderItem
-        const linkedOrderItems = await db.orderItem.findFirst({
-            where: {
-                articleId: id, // Vérifie si cet article est utilisé dans une commande
-            },
-        });
-
+        const linkedOrderItems = await isArticleAlreadyUsedInOrder(id);
         if (linkedOrderItems) {
             return NextResponse.json(
                 {message: "Impossible de supprimer l'article : Il est utilisé dans une commande."},
@@ -154,12 +131,7 @@ export async function DELETE(req: NextRequest, {params}: { params: { id: string 
         }
 
         // 4️⃣ Vérifier si l'article est dans un panier
-        const linkedCartItems = await db.cartItem.findFirst({
-            where: {
-                articleId: id, // Vérifie si l'article est présent dans un panier
-            },
-        });
-
+        const linkedCartItems = await isArticleAlreadyUsedInCart(id);
         if (linkedCartItems) {
             return NextResponse.json(
                 {message: "Impossible de supprimer l'article : Il est présent dans un panier."},
@@ -168,9 +140,7 @@ export async function DELETE(req: NextRequest, {params}: { params: { id: string 
         }
 
         // 4️⃣ Suppression de l'article
-        await db.article.delete({
-            where: {id},
-        });
+        await deleteArticle(id);
 
         return NextResponse.json({message: "Article supprimé avec succès"}, {status: 200});
 

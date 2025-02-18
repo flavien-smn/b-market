@@ -34,10 +34,10 @@ VALUES
   ('art11', 'Huile d''olive', 'litre', 8.90, 'huile_olive.jpg', 'Huile d''olive extra vierge.', NOW(), NOW(), 'Épicerie');
 
 -- Insérer des utilisateurs
-INSERT INTO "User" (id, name, email, password, role, "createdAt", "updatedAt", "cartId")
+INSERT INTO "User" (id, name, email, password, role, "isDeleted", "createdAt", "updatedAt", "cartId")
 VALUES 
-  ('user1', 'Mohammed Benali', 'mohammed.benali@example.com', 'hashedpassword1', 'user', NOW(), NOW(), 'cart1'),
-  ('user2', 'Sarah Dubois', 'sarah.dubois@example.com', 'hashedpassword2', 'user', NOW(), NOW(), 'cart2');
+  ('user1', 'Mohammed Benali', 'mohammed.benali@example.com', 'hashedpassword1', 'user', FALSE, NOW(), NOW(), 'cart1'),
+  ('user2', 'Sarah Dubois', 'sarah.dubois@example.com', 'hashedpassword2', 'user', FALSE, NOW(), NOW(), 'cart2');
 
 -- Insérer les paniers
 INSERT INTO "Cart" (id, "userId", "createdAt", "updatedAt")
