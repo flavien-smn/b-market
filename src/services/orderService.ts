@@ -23,8 +23,27 @@ export async function updateOrderStatus(orderId: string, newStatus: "pending" | 
     });
 }
 
+/**
+ *  🔴 Unused but don't delete
+ */
 export async function getOrderById(id: string): Promise<Order | null> {
-    return db.order.findUnique({where: {id}, include: {orderItems: true}});
+    return db.order.findUnique({
+        where: {id}, include: {
+            orderItems: {
+                include: {
+                    article: true // Inclure l'article pour chaque orderItem
+                }
+            }
+        }
+    });
+}
+
+
+export async function isExistOrderByID(id: string): Promise<boolean> {
+    const existingOrder = await db.order.findUnique({
+        where: {id},
+    });
+    return !!existingOrder;
 }
 
 

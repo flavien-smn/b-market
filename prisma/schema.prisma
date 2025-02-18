@@ -18,12 +18,14 @@ model User {
   email     String    @unique
   password  String
   role      String    @default("user")
+  isDeleted Boolean   @default(false)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   cartId    String?   @unique
   cart      Cart?     @relation
   orders    Order[]
 }
+
 model Article {
   id          String    @id @default(cuid())
   name        String    @unique
@@ -52,26 +54,26 @@ model Cart {
   userId    String    @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  user      User?     @relation(fields: [userId], references: [id])
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   cartItems CartItem[]
 }
 
 model CartItem {
   id        String  @id @default(cuid())
   cartId    String
-  cart      Cart    @relation(fields: [cartId], references: [id])
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
   articleId String
   article   Article @relation(fields: [articleId], references: [id])
   quantity  Int     @default(1)
-  @@unique([cartId, articleId])  // 🚀 Ajout de la contrainte UNIQUE
+  @@unique([cartId, articleId])
 }
 
 model Order {
   id          String      @id @default(cuid())
   userId      String
-  user        User        @relation(fields: [userId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])  // Pas de cascade ici comme discuté
   total       Float
-  status      String      @default("pending") // "pending", "completed", etc.
+  status      String      @default("pending")
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   orderItems  OrderItem[]
@@ -80,10 +82,10 @@ model Order {
 model OrderItem {
   id        String  @id @default(cuid())
   orderId   String
-  order     Order   @relation(fields: [orderId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   articleId String
   article   Article @relation(fields: [articleId], references: [id])
   quantity  Int     @default(1)
   price     Float
-  @@unique([orderId, articleId])  // 🚀 Ajout de la contrainte UNIQUE
+  @@unique([orderId, articleId])
 }

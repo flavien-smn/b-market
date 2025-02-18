@@ -1,33 +1,36 @@
+'use server'
+
+import {deleteOrder, isExistOrderByID} from "@/services/orderService";
 import {NextRequest, NextResponse} from "next/server";
-import {db} from "@/app/lib/db";
 
 
 // 🔴 DELETE → Supprimer une commande avec ses `OrderItems`
-export async function DELETE(req: NextRequest, {params}: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, context: { params: { id: string } }) {
     try {
-        const {id} = await params;
+        // L'ID est directement accessible depuis params
+        const params = await context.params;
 
-        if (!id) {
+
+        if (!params.id) {
             return NextResponse.json({message: "L'ID de la commande est requis"}, {status: 400});
         }
 
-        // Vérifier si la commande existe
-        const existingOrder = await db.order.findUnique({
-            where: {id},
-        });
+        const orderExist = await isExistOrderByID(params.id);
 
-        if (!existingOrder) {
+        if (!orderExist) {
             return NextResponse.json({message: "Commande introuvable"}, {status: 404});
         }
 
-        // Suppression de la commande (cascade supprime aussi les OrderItems)
-        await db.order.delete({
-            where: {id},
-        });
-
+        await deleteOrder(params.id);
         return NextResponse.json({message: "Commande supprimée avec succès"}, {status: 200});
     } catch (error) {
-        console.error("Erreur lors de la suppression de la commande :", error);
-        return NextResponse.json({message: "Erreur serveur lors de la suppression"}, {status: 500});
+        // Modification de la gestion d'erreur
+        const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
+        console.error("Erreur lors de la suppression de la commande :", errorMessage);
+
+        return NextResponse.json(
+            {message: "Erreur serveur lors de la suppression", error: errorMessage},
+            {status: 500}
+        );
     }
 }

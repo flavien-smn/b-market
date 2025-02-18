@@ -1,7 +1,7 @@
 "use client"
 
-import { ArticleForm } from "@/components/articleAdmin/articleForm"
-import { ArticleTable } from "@/components/articleAdmin/articleTable"
+import {ArticleForm} from "@/components/articleAdmin/articleForm"
+import {ArticleTable} from "@/components/articleAdmin/articleTable"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -12,13 +12,13 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/hooks/use-toast"
-import { useArticles } from "@/hooks/useArticles"
-import { Article } from "@/types/article"
-import { Loader2 } from "lucide-react"
-import { useState } from "react"
+import {Button} from "@/components/ui/button"
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
+import {useToast} from "@/hooks/use-toast"
+import {useArticles} from "@/hooks/useArticles"
+import {Article} from "@/types/article"
+import {Loader2} from "lucide-react"
+import {useState} from "react"
 
 export default function ArticlePage() {
     const {toast} = useToast()
@@ -71,7 +71,7 @@ export default function ArticlePage() {
                     </Button>
                 </CardHeader>
                 <CardContent>
-                    <ArticleTable 
+                    <ArticleTable
                         data={articles}
                         onEdit={(article) => {
                             setIsFormOpen(true)
