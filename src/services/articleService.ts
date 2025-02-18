@@ -29,3 +29,14 @@ export async function isArticleNameAlreadyExist(name: string): Promise<boolean> 
     });
     return !!existingArticle;
 }
+
+export async function hasArticlesInCategory(categoryId: string): Promise<boolean> {
+    const count = await db.article.count({
+        where: {
+            category: {
+                id: categoryId
+            }
+        }
+    });
+    return count > 0;
+}
