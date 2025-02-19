@@ -45,11 +45,11 @@ export default function OrdersManagement() {
           </div>
         </CardHeader>
         <CardContent>
-          
+
           <OrderTable
             data={orders}
-            onEdit={(order) => {}}
-            onDelete={(category) => {}}>
+            onEdit={(order) => { }}
+            onDelete={(category) => { }}>
           </OrderTable>
         </CardContent>
       </Card>

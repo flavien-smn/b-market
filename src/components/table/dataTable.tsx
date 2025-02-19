@@ -1,33 +1,35 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
     ColumnDef,
+    ColumnFiltersState,
     flexRender,
     getCoreRowModel,
-    useReactTable,
-    getPaginationRowModel,
-    SortingState,
-    getSortedRowModel,
-    ColumnFiltersState,
     getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    SortingState,
+    useReactTable,
 } from '@tanstack/react-table'
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
-import {Button} from "@/components/ui/button"
-import {Input} from "@/components/ui/input"
-import {useState} from "react"
+import { useState } from "react"
 
 interface DataTableProps<TData> {
     columns: ColumnDef<TData>[]
     data: TData[]
     filterColumn?: string
     filterPlaceholder?: string
+    onRowClick?: (data: TData) => void
 }
 
 export function DataTable<TData>({
     columns,
     data,
     filterColumn,
-    filterPlaceholder = "Filtrer..."
+    filterPlaceholder = "Filtrer...",
+    onRowClick
 }: DataTableProps<TData>) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -82,7 +84,12 @@ export function DataTable<TData>({
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id}>
+                                <TableRow
+                                    key={row.id}
+                                    data-state={row.getIsSelected() && "selected"}
+                                    onClick={() => onRowClick?.(row.original)}
+                                    className={onRowClick ? "cursor-pointer hover:bg-muted" : ""}
+                                >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
                                             {flexRender(

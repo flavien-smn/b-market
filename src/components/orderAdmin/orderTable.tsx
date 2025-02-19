@@ -2,20 +2,27 @@
 
 import { Button } from "@/components/ui/button"
 import { Order } from "@/types/order"
-import { ColumnDef, useReactTable } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
-import { Badge } from "../ui/badge"
+import { ColumnDef } from "@tanstack/react-table"
+import { ArrowUpDown, Eye } from "lucide-react"
 import { DataTable } from "../table/dataTable"
+import { Badge } from "../ui/badge"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 interface OrderTableProps {
-    data: Order[]
-    onEdit: (Order: Order) => void
-    onDelete: (Order: Order) => void
+  data: Order[]
+  onEdit: (Order: Order) => void
+  onDelete: (Order: Order) => void
 }
 
-export function OrderTable({data, onEdit, onDelete}: OrderTableProps) {
-    
-const columns: ColumnDef<Order>[] = [
+export function OrderTable({ data, onEdit, onDelete }: OrderTableProps) {
+  const router = useRouter();
+
+  const handleRowClick = (order: Order) => {
+    router.push(`/admin/order/${order.id}`);
+  };
+
+  const columns: ColumnDef<Order>[] = [
     {
       accessorKey: 'id',
       header: 'Order ID',
@@ -50,12 +57,12 @@ const columns: ColumnDef<Order>[] = [
               status === 'pending'
                 ? 'secondary'
                 : status === 'awaiting_payment'
-                ? 'info'
-                : status === 'completed'
-                ? 'success'
-                : status === 'cancelled'
-                ? 'destructive'
-                : 'default'
+                  ? 'info'
+                  : status === 'completed'
+                    ? 'success'
+                    : status === 'cancelled'
+                      ? 'destructive'
+                      : 'default'
             }
           >
             {status}
@@ -75,41 +82,29 @@ const columns: ColumnDef<Order>[] = [
       },
     },
     {
-      accessorKey: 'orderItems',
-      header: 'Articles',
+      id: 'actions',
       cell: ({ row }) => {
-        const orderItems = row.original.orderItems;
         return (
-          <div className="flex flex-col gap-1">
-            {orderItems?.map((item, index) => (
-              <div key={index} className="flex items-center gap-2 text-sm">
-                <span className="font-medium">{item.article.name}</span>
-                <span className="text-muted-foreground">
-                  ({item.quantity} {item.article.unit})
-                </span>
-                <span className="text-muted-foreground">•</span>
-                <span className="text-muted-foreground">{item.price}€</span>
-              </div>
-            ))}
-            <div className="mt-2 flex justify-between items-center text-sm font-semibold">
-              <span>Total</span>
-              <span>{row.original.total.toFixed(2)}€</span>
-            </div>
+          <div className="flex items-center gap-2">
+            <Link href={`/admin/order/${row.original.id}`}>
+              <Button variant="ghost" size="icon">
+                <Eye className="h-4 w-4" />
+              </Button>
+            </Link>
           </div>
-        );
-      },
-    },
+        )
+      }
+    }
   ];
 
-
-
   return (
-    <DataTable 
-        columns={columns} 
-        data={data} 
-        filterColumn="user"
-        filterPlaceholder="Filtrer par client..."
+    <DataTable
+      columns={columns}
+      data={data}
+      filterColumn="user"
+      filterPlaceholder="Filtrer par client..."
+      onRowClick={handleRowClick}
     />
-)
+  )
 
 }
