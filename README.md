@@ -35,11 +35,13 @@ docker-compose up -d
    ```
 2. **Générer le client Prisma** :
    ```sh
-   npx prisma generate
+   npx @better-auth/cli generate
+
    ```
 3. **Appliquer la migration** :
    ```sh
-   npx prisma migrate dev --name init
+   npx @better-auth/cli migrate
+
    ```
 
 ### 5. Lancer le projet en mode développement
@@ -74,4 +76,5 @@ Le site est maintenant accessible sur [http://localhost:3000](http://localhost:3
 
 ## ✅ Tout est prêt ? 🎉
 Vous pouvez maintenant commencer à coder ! 🚀
+
 
