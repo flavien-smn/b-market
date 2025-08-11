@@ -1,0 +1,156 @@
+html {
+	scroll-behavior: smooth;
+}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	:root {
+		--background: 0 0% 100%;
+		--foreground: 0 0% 0%;
+
+		--card: 0 0% 100%;
+		--card-foreground: 0 0% 0%;
+
+		--popover: 0 0% 100%;
+		--popover-foreground: 0 0% 0%;
+
+		--primary: 350 70% 25%;
+		--primary-foreground: 0 0% 100%;
+
+		--secondary: 0 0% 0%;
+		--secondary-foreground: 0 0% 100%;
+
+		--muted: 0 0% 96.1%;
+		--muted-foreground: 0 0% 45.1%;
+
+		--accent: 350 70% 95%;
+		--accent-foreground: 350 70% 25%;
+
+		--destructive: 0 84.2% 60.2%;
+		--destructive-foreground: 0 0% 98%;
+
+		--border: 0 0% 89.8%;
+		--input: 0 0% 89.8%;
+		--ring: 350 70% 25%;
+
+		--radius: 0.5rem;
+	}
+	.dark {
+		--background: 0 0% 8%;
+		--foreground: 0 0% 95%;
+	  
+		--card: 0 0% 12%;
+		--card-foreground: 0 0% 95%;
+	  
+		--popover: 0 0% 12%;
+		--popover-foreground: 4 75% 40%;
+	  
+		--primary: 4 75% 40%;
+		--primary-foreground: 0 0% 100%;
+	  
+		--secondary: 0 0% 16%;
+		--secondary-foreground: 4 75% 45%;
+	  
+		--accent: 4 100% 20%;
+		--accent-foreground: 0 0% 100%;
+	  
+		--muted: 0 0% 20%;
+		--muted-foreground: 0 0% 60%;
+	  
+		--destructive: 0 75% 35%;
+		--destructive-foreground: 0 0% 100%;
+	  
+		--border: 0 0% 25%;
+		--input: 0 0% 15%;
+		--ring: 4 75% 40%;
+
+		--disabled: 210 10% 18%;
+		--disabled-foreground: 0 0% 50%;
+		--disabled-border: 0 0% 25%;
+
+	  }
+	  
+}
+
+@layer base {
+	* {
+		@apply border-border;
+	}
+	body {
+		@apply bg-background text-foreground;
+		font-feature-settings:
+			'rlig' 1,
+			'calt' 1;
+	}
+}
+
+@layer components {
+	.select-item {
+		@apply text-foreground bg-background hover:bg-accent hover:text-accent-foreground cursor-pointer;
+	}
+	.container-custom {
+		@apply container mx-auto px-4 sm:px-6 lg:px-8;
+	}
+
+	.heading-xl {
+		@apply text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight;
+	}
+
+	.heading-lg {
+		@apply text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-tight;
+	}
+
+	.heading-md {
+		@apply text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight leading-tight;
+	}
+
+	.boucherie-card {
+		@apply bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden dark:bg-boucherie-black dark:border dark:border-boucherie-red/30;
+	}
+
+	.btn-primary {
+		@apply bg-boucherie-red text-white hover:bg-boucherie-red-light px-6 py-3 rounded-md font-semibold transition-all duration-300 shadow-md hover:shadow-lg;
+	}
+
+	.btn-secondary {
+		@apply bg-boucherie-black text-boucherie-red hover:bg-gray-900 px-6 py-3 rounded-md font-semibold transition-all duration-300 shadow-md hover:shadow-lg border border-boucherie-red/50;
+	}
+}
+
+.gradient-text {
+	@apply bg-clip-text text-transparent bg-red-gradient animate-shimmer bg-[length:200%_auto];
+}
+
+.section-padding {
+	@apply py-16 sm:py-24 lg:py-32;
+}
+
+.hover-lift {
+	@apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+}
+
+.boucherie-border {
+	@apply border border-boucherie-red/30;
+}
+
+.boucherie-card {
+	@apply bg-boucherie-black border border-boucherie-red/30 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden;
+}
+
+.boucherie-gradient-text {
+	@apply bg-clip-text text-transparent bg-red-gradient animate-shimmer bg-[length:200%_auto];
+}
+
+.boucherie-section {
+	@apply bg-boucherie-black text-white;
+}
+
+.boucherie-button {
+	@apply bg-boucherie-red text-white hover:bg-boucherie-red-light px-6 py-3 rounded-md font-semibold transition-all duration-300 shadow-md hover:shadow-lg;
+}
+
+.boucherie-button-outline {
+	@apply bg-transparent text-boucherie-red hover:bg-boucherie-red/10 px-6 py-3 rounded-md font-semibold transition-all duration-300 border border-boucherie-red;
+}
